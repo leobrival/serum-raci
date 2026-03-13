@@ -3,7 +3,13 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { ProjectStatus, ProjectWithRaci } from "@/domain/types";
 import { type ProjectFormValues, projectFormSchema } from "@/domain/validation";
@@ -47,6 +53,8 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 		},
 	});
 
+	const currentStatus = watch("status");
+
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 			<div className="space-y-2">
@@ -66,13 +74,21 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 
 			<div className="grid grid-cols-2 gap-4">
 				<div className="space-y-2">
-					<Label htmlFor="status">Statut</Label>
-					<Select id="status" {...register("status")}>
-						{statusOptions.map((opt) => (
-							<option key={opt.value} value={opt.value}>
-								{opt.label}
-							</option>
-						))}
+					<Label>Statut</Label>
+					<Select
+						value={currentStatus}
+						onValueChange={(val) => setValue("status", val as ProjectStatus)}
+					>
+						<SelectTrigger>
+							<SelectValue placeholder="Sélectionner un statut" />
+						</SelectTrigger>
+						<SelectContent>
+							{statusOptions.map((opt) => (
+								<SelectItem key={opt.value} value={opt.value}>
+									{opt.label}
+								</SelectItem>
+							))}
+						</SelectContent>
 					</Select>
 				</div>
 
