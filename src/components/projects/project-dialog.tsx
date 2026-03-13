@@ -29,10 +29,7 @@ export function ProjectDialog({ open, onOpenChange, project }: ProjectDialogProp
 			description: values.description ?? "",
 			status: values.status,
 			github_url: values.github_url ?? "",
-			responsible_id: values.responsible_id,
-			accountable_id: values.accountable_id,
-			consulted_id: values.consulted_id,
-			informed_id: values.informed_id,
+			raci: values.raci,
 		};
 
 		if (isEditing) {

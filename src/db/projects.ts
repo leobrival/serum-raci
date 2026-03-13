@@ -1,93 +1,78 @@
-import type { ProjectFormInput, ProjectWithRaci } from "@/domain/types";
+import type { ProjectFormInput, ProjectWithRaci, RaciRole, TeamMember } from "@/domain/types";
 import { sql } from "./client";
 
-export async function getProjects(): Promise<ProjectWithRaci[]> {
-	const rows = await sql`
-		SELECT
-			p.id,
-			p.name,
-			p.description,
-			p.status,
-			p.github_url,
-			p.responsible_id,
-			p.accountable_id,
-			p.consulted_id,
-			p.informed_id,
-			p.created_at,
-			p.updated_at,
-			r.id as r_id, r.first_name as r_first_name, r.last_name as r_last_name, r.photo as r_photo,
-			a.id as a_id, a.first_name as a_first_name, a.last_name as a_last_name, a.photo as a_photo,
-			c.id as c_id, c.first_name as c_first_name, c.last_name as c_last_name, c.photo as c_photo,
-			i.id as i_id, i.first_name as i_first_name, i.last_name as i_last_name, i.photo as i_photo
-		FROM projects p
-		LEFT JOIN teams r ON p.responsible_id = r.id
-		LEFT JOIN teams a ON p.accountable_id = a.id
-		LEFT JOIN teams c ON p.consulted_id = c.id
-		LEFT JOIN teams i ON p.informed_id = i.id
-		ORDER BY p.updated_at DESC
-	`;
+type RaciRow = {
+	project_id: string;
+	role: RaciRole;
+	member_id: string;
+	first_name: string;
+	last_name: string;
+	photo: string | null;
+};
 
-	return rows.map((row) => ({
-		id: row.id as string,
-		name: row.name as string,
-		description: row.description as string | null,
-		status: row.status as ProjectWithRaci["status"],
-		github_url: row.github_url as string | null,
-		responsible_id: row.responsible_id as string | null,
-		accountable_id: row.accountable_id as string | null,
-		consulted_id: row.consulted_id as string | null,
-		informed_id: row.informed_id as string | null,
-		created_at: row.created_at as string,
-		updated_at: row.updated_at as string,
-		responsible: row.r_id
-			? {
-					id: row.r_id as string,
-					first_name: row.r_first_name as string,
-					last_name: row.r_last_name as string,
-					photo: row.r_photo as string | null,
-				}
-			: null,
-		accountable: row.a_id
-			? {
-					id: row.a_id as string,
-					first_name: row.a_first_name as string,
-					last_name: row.a_last_name as string,
-					photo: row.a_photo as string | null,
-				}
-			: null,
-		consulted: row.c_id
-			? {
-					id: row.c_id as string,
-					first_name: row.c_first_name as string,
-					last_name: row.c_last_name as string,
-					photo: row.c_photo as string | null,
-				}
-			: null,
-		informed: row.i_id
-			? {
-					id: row.i_id as string,
-					first_name: row.i_first_name as string,
-					last_name: row.i_last_name as string,
-					photo: row.i_photo as string | null,
-				}
-			: null,
-	}));
+export async function getProjects(): Promise<ProjectWithRaci[]> {
+	const [projectRows, raciRows] = await Promise.all([
+		sql`
+			SELECT id, name, description, status, github_url, created_at, updated_at
+			FROM projects
+			ORDER BY updated_at DESC
+		`,
+		sql`
+			SELECT pr.project_id, pr.role, t.id AS member_id, t.first_name, t.last_name, t.photo
+			FROM project_raci pr
+			JOIN teams t ON pr.member_id = t.id
+			ORDER BY t.first_name
+		`,
+	]);
+
+	const raciMap = new Map<string, Record<RaciRole, TeamMember[]>>();
+
+	for (const row of raciRows as RaciRow[]) {
+		let entry = raciMap.get(row.project_id);
+		if (!entry) {
+			entry = { R: [], A: [], C: [], I: [] };
+			raciMap.set(row.project_id, entry);
+		}
+		entry[row.role].push({
+			id: row.member_id,
+			first_name: row.first_name,
+			last_name: row.last_name,
+			photo: row.photo,
+		});
+	}
+
+	return projectRows.map((row) => {
+		const raci = raciMap.get(row.id as string) ?? { R: [], A: [], C: [], I: [] };
+		return {
+			id: row.id as string,
+			name: row.name as string,
+			description: row.description as string | null,
+			status: row.status as ProjectWithRaci["status"],
+			github_url: row.github_url as string | null,
+			created_at: row.created_at as string,
+			updated_at: row.updated_at as string,
+			responsible: raci.R,
+			accountable: raci.A,
+			consulted: raci.C,
+			informed: raci.I,
+		};
+	});
 }
 
 export async function createProject(input: ProjectFormInput): Promise<void> {
-	await sql`
-		INSERT INTO projects (name, description, status, github_url, responsible_id, accountable_id, consulted_id, informed_id)
+	const [project] = await sql`
+		INSERT INTO projects (name, description, status, github_url)
 		VALUES (
 			${input.name},
 			${input.description || null},
 			${input.status},
-			${input.github_url || null},
-			${input.responsible_id},
-			${input.accountable_id},
-			${input.consulted_id},
-			${input.informed_id}
+			${input.github_url || null}
 		)
+		RETURNING id
 	`;
+
+	const projectId = project.id as string;
+	await insertRaciAssignments(projectId, input.raci);
 }
 
 export async function updateProject(id: string, input: ProjectFormInput): Promise<void> {
@@ -97,15 +82,37 @@ export async function updateProject(id: string, input: ProjectFormInput): Promis
 			description = ${input.description || null},
 			status = ${input.status},
 			github_url = ${input.github_url || null},
-			responsible_id = ${input.responsible_id},
-			accountable_id = ${input.accountable_id},
-			consulted_id = ${input.consulted_id},
-			informed_id = ${input.informed_id},
 			updated_at = NOW()
 		WHERE id = ${id}
 	`;
+
+	await sql`DELETE FROM project_raci WHERE project_id = ${id}`;
+	await insertRaciAssignments(id, input.raci);
 }
 
 export async function deleteProject(id: string): Promise<void> {
 	await sql`DELETE FROM projects WHERE id = ${id}`;
+}
+
+async function insertRaciAssignments(
+	projectId: string,
+	raci: Record<RaciRole, string[]>,
+): Promise<void> {
+	const roles: RaciRole[] = ["R", "A", "C", "I"];
+	const values: [string, RaciRole, string][] = [];
+
+	for (const role of roles) {
+		for (const memberId of raci[role]) {
+			values.push([projectId, role, memberId]);
+		}
+	}
+
+	if (values.length === 0) return;
+
+	for (const [pId, role, memberId] of values) {
+		await sql`
+			INSERT INTO project_raci (project_id, role, member_id)
+			VALUES (${pId}, ${role}, ${memberId})
+		`;
+	}
 }

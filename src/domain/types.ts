@@ -15,19 +15,15 @@ export type Project = {
 	description: string | null;
 	status: ProjectStatus;
 	github_url: string | null;
-	responsible_id: string | null;
-	accountable_id: string | null;
-	consulted_id: string | null;
-	informed_id: string | null;
 	created_at: string;
 	updated_at: string;
 };
 
 export type ProjectWithRaci = Project & {
-	responsible: TeamMember | null;
-	accountable: TeamMember | null;
-	consulted: TeamMember | null;
-	informed: TeamMember | null;
+	responsible: TeamMember[];
+	accountable: TeamMember[];
+	consulted: TeamMember[];
+	informed: TeamMember[];
 };
 
 export type ProjectFormInput = {
@@ -35,8 +31,5 @@ export type ProjectFormInput = {
 	description: string;
 	status: ProjectStatus;
 	github_url: string;
-	responsible_id: string | null;
-	accountable_id: string | null;
-	consulted_id: string | null;
-	informed_id: string | null;
+	raci: Record<RaciRole, string[]>;
 };

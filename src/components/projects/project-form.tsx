@@ -7,7 +7,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { ProjectStatus, ProjectWithRaci } from "@/domain/types";
 import { type ProjectFormValues, projectFormSchema } from "@/domain/validation";
-import { MemberSelect } from "./member-select";
+import { MemberMultiSelect } from "./member-multi-select";
 
 type ProjectFormProps = {
 	project?: ProjectWithRaci;
@@ -38,10 +38,12 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 			description: project?.description ?? "",
 			status: project?.status ?? "draft",
 			github_url: project?.github_url ?? "",
-			responsible_id: project?.responsible_id ?? null,
-			accountable_id: project?.accountable_id ?? null,
-			consulted_id: project?.consulted_id ?? null,
-			informed_id: project?.informed_id ?? null,
+			raci: {
+				R: project?.responsible.map((m) => m.id) ?? [],
+				A: project?.accountable.map((m) => m.id) ?? [],
+				C: project?.consulted.map((m) => m.id) ?? [],
+				I: project?.informed.map((m) => m.id) ?? [],
+			},
 		},
 	});
 
@@ -90,36 +92,36 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 						<Label>
 							<span className="text-red-600 font-bold">R</span>esponsible
 						</Label>
-						<MemberSelect
-							value={watch("responsible_id")}
-							onChange={(v) => setValue("responsible_id", v)}
+						<MemberMultiSelect
+							value={watch("raci.R")}
+							onChange={(ids) => setValue("raci.R", ids)}
 						/>
 					</div>
 					<div className="space-y-2">
 						<Label>
 							<span className="text-amber-600 font-bold">A</span>ccountable
 						</Label>
-						<MemberSelect
-							value={watch("accountable_id")}
-							onChange={(v) => setValue("accountable_id", v)}
+						<MemberMultiSelect
+							value={watch("raci.A")}
+							onChange={(ids) => setValue("raci.A", ids)}
 						/>
 					</div>
 					<div className="space-y-2">
 						<Label>
 							<span className="text-blue-600 font-bold">C</span>onsulted
 						</Label>
-						<MemberSelect
-							value={watch("consulted_id")}
-							onChange={(v) => setValue("consulted_id", v)}
+						<MemberMultiSelect
+							value={watch("raci.C")}
+							onChange={(ids) => setValue("raci.C", ids)}
 						/>
 					</div>
 					<div className="space-y-2">
 						<Label>
 							<span className="text-green-600 font-bold">I</span>nformed
 						</Label>
-						<MemberSelect
-							value={watch("informed_id")}
-							onChange={(v) => setValue("informed_id", v)}
+						<MemberMultiSelect
+							value={watch("raci.I")}
+							onChange={(ids) => setValue("raci.I", ids)}
 						/>
 					</div>
 				</div>

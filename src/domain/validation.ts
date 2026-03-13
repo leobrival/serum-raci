@@ -5,10 +5,12 @@ export const projectFormSchema = z.object({
 	description: z.string(),
 	status: z.enum(["draft", "in_progress", "review", "completed", "archived"]),
 	github_url: z.string(),
-	responsible_id: z.string().nullable(),
-	accountable_id: z.string().nullable(),
-	consulted_id: z.string().nullable(),
-	informed_id: z.string().nullable(),
+	raci: z.object({
+		R: z.array(z.string()),
+		A: z.array(z.string()),
+		C: z.array(z.string()),
+		I: z.array(z.string()),
+	}),
 });
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;
