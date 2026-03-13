@@ -1,12 +1,11 @@
 import type { TeamMember } from "@/domain/types";
 
-function getInitials(name: string): string {
-	return name
-		.split(" ")
-		.map((part) => part[0])
-		.join("")
-		.toUpperCase()
-		.slice(0, 2);
+function getInitials(member: TeamMember): string {
+	return `${member.first_name[0]}${member.last_name[0]}`.toUpperCase();
+}
+
+function getFullName(member: TeamMember): string {
+	return `${member.first_name} ${member.last_name}`;
 }
 
 export function MemberAvatar({ member }: { member: TeamMember | null }) {
@@ -21,9 +20,9 @@ export function MemberAvatar({ member }: { member: TeamMember | null }) {
 	return (
 		<span
 			className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground"
-			title={`${member.name} (${member.role})`}
+			title={getFullName(member)}
 		>
-			{getInitials(member.name)}
+			{getInitials(member)}
 		</span>
 	);
 }

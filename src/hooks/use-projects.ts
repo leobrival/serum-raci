@@ -29,7 +29,7 @@ export function useUpdateProject() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({ id, input }: { id: number; input: ProjectFormInput }) =>
+		mutationFn: ({ id, input }: { id: string; input: ProjectFormInput }) =>
 			updateProject(id, input),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -45,7 +45,7 @@ export function useDeleteProject() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (id: number) => deleteProject(id),
+		mutationFn: (id: string) => deleteProject(id),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["projects"] });
 			toast.success("Projet supprimé");

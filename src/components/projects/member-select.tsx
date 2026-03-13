@@ -2,8 +2,8 @@ import { Select } from "@/components/ui/select";
 import { useTeams } from "@/hooks/use-teams";
 
 type MemberSelectProps = {
-	value: number | null;
-	onChange: (value: number | null) => void;
+	value: string | null;
+	onChange: (value: string | null) => void;
 	placeholder?: string;
 };
 
@@ -16,16 +16,16 @@ export function MemberSelect({
 
 	return (
 		<Select
-			value={value?.toString() ?? ""}
+			value={value ?? ""}
 			onChange={(e) => {
 				const val = e.target.value;
-				onChange(val ? Number(val) : null);
+				onChange(val || null);
 			}}
 		>
 			<option value="">{placeholder}</option>
 			{members.map((member) => (
-				<option key={member.id} value={member.id.toString()}>
-					{member.name} — {member.role}
+				<option key={member.id} value={member.id}>
+					{member.first_name} {member.last_name}
 				</option>
 			))}
 		</Select>
