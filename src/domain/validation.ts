@@ -8,8 +8,16 @@ export const projectFormSchema = z.object({
 	github_url: z.string(),
 	loom_url: z.string(),
 	roi: z.string(),
-	gwt: z.string(),
 	user_story: z.string(),
+	acceptance_criteria: z.array(
+		z.object({
+			title: z.string().min(1, "Title is required"),
+			given_clause: z.string(),
+			when_clause: z.string(),
+			then_clause: z.string(),
+			status: z.enum(["pending", "pass", "fail"]),
+		}),
+	),
 	raci: z.object({
 		R: z.array(z.string()),
 		A: z.array(z.string()),

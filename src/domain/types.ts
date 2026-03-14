@@ -1,5 +1,16 @@
 export type RaciRole = "R" | "A" | "C" | "I";
 
+export type CriterionStatus = "pending" | "pass" | "fail";
+
+export type AcceptanceCriterion = {
+	id: string;
+	title: string;
+	given_clause: string;
+	when_clause: string;
+	then_clause: string;
+	status: CriterionStatus;
+};
+
 export type ProjectStatus = "draft" | "in_progress" | "review" | "completed" | "archived";
 
 export type TeamMember = {
@@ -18,7 +29,6 @@ export type Project = {
 	github_url: string | null;
 	loom_url: string | null;
 	roi: string | null;
-	gwt: string | null;
 	user_story: string | null;
 	created_at: string;
 	updated_at: string;
@@ -29,6 +39,7 @@ export type ProjectWithRaci = Project & {
 	accountable: TeamMember[];
 	consulted: TeamMember[];
 	informed: TeamMember[];
+	acceptance_criteria: AcceptanceCriterion[];
 };
 
 export type ProjectFormInput = {
@@ -39,7 +50,15 @@ export type ProjectFormInput = {
 	github_url: string;
 	loom_url: string;
 	roi: string;
-	gwt: string;
 	user_story: string;
+	acceptance_criteria: AcceptanceCriterionInput[];
 	raci: Record<RaciRole, string[]>;
+};
+
+export type AcceptanceCriterionInput = {
+	title: string;
+	given_clause: string;
+	when_clause: string;
+	then_clause: string;
+	status: CriterionStatus;
 };

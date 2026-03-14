@@ -56,7 +56,7 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 						User Story
 					</TableHead>
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-						GWT
+						Critères
 					</TableHead>
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
 						ROI
@@ -130,10 +130,28 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 							)}
 						</TableCell>
 						<TableCell>
-							{project.gwt ? (
-								<p className="text-xs text-muted-foreground line-clamp-2 max-w-[200px]">
-									{project.gwt}
-								</p>
+							{project.acceptance_criteria.length > 0 ? (
+								<div className="flex items-center gap-1.5">
+									<span className="text-xs font-medium">
+										{project.acceptance_criteria.filter((c) => c.status === "pass").length}/
+										{project.acceptance_criteria.length}
+									</span>
+									<div className="flex gap-0.5">
+										{project.acceptance_criteria.map((c) => (
+											<div
+												key={c.id}
+												className={`h-1.5 w-1.5 rounded-full ${
+													c.status === "pass"
+														? "bg-green-500"
+														: c.status === "fail"
+															? "bg-red-500"
+															: "bg-muted-foreground/30"
+												}`}
+												title={c.title}
+											/>
+										))}
+									</div>
+								</div>
 							) : (
 								<span className="text-xs text-muted-foreground/50">&mdash;</span>
 							)}

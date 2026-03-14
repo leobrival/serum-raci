@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Plus, Trash2 } from "lucide-react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +12,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { ProjectStatus, ProjectWithRaci } from "@/domain/types";
+import type { CriterionStatus, ProjectStatus, ProjectWithRaci } from "@/domain/types";
 import { type ProjectFormValues, projectFormSchema } from "@/domain/validation";
 import { MemberMultiSelect } from "./member-multi-select";
 
@@ -36,6 +37,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 		handleSubmit,
 		setValue,
 		watch,
+		control,
 		formState: { errors },
 	} = useForm<ProjectFormValues>({
 		resolver: zodResolver(projectFormSchema),
@@ -47,8 +49,15 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 			github_url: project?.github_url ?? "",
 			loom_url: project?.loom_url ?? "",
 			roi: project?.roi ?? "",
-			gwt: project?.gwt ?? "",
 			user_story: project?.user_story ?? "",
+			acceptance_criteria:
+				project?.acceptance_criteria.map((c) => ({
+					title: c.title,
+					given_clause: c.given_clause,
+					when_clause: c.when_clause,
+					then_clause: c.then_clause,
+					status: c.status,
+				})) ?? [],
 			raci: {
 				R: project?.responsible.map((m) => m.id) ?? [],
 				A: project?.accountable.map((m) => m.id) ?? [],
@@ -59,6 +68,11 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 	});
 
 	const currentStatus = watch("status");
+
+	const { fields, append, remove } = useFieldArray({
+		control,
+		name: "acceptance_criteria",
+	});
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -129,13 +143,94 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 				/>
 			</div>
 
-			<div className="space-y-2">
-				<Label htmlFor="gwt">GWT (Given-When-Then)</Label>
-				<Textarea
-					id="gwt"
-					{...register("gwt")}
-					placeholder="Given [contexte], When [action], Then [résultat attendu]..."
-				/>
+			<div className="border-t border-border pt-4">
+				<div className="flex items-center justify-between mb-3">
+					<h4 className="text-sm font-semibold">Critères d'acceptation (GWT)</h4>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						className="h-7 text-xs"
+						onClick={() =>
+							append({
+								title: "",
+								given_clause: "",
+								when_clause: "",
+								then_clause: "",
+								status: "pending",
+							})
+						}
+					>
+						<Plus className="h-3 w-3 mr-1" />
+						Ajouter
+					</Button>
+				</div>
+				{fields.length === 0 && (
+					<p className="text-xs text-muted-foreground">Aucun critère. Cliquez sur Ajouter.</p>
+				)}
+				<div className="space-y-3">
+					{fields.map((field, index) => (
+						<div key={field.id} className="rounded-md border border-border p-3 space-y-2">
+							<div className="flex items-center gap-2">
+								<Input
+									{...register(`acceptance_criteria.${index}.title`)}
+									placeholder={`AC-${String(index + 1).padStart(3, "0")}: Titre du critère`}
+									className="text-sm"
+								/>
+								<Select
+									value={watch(`acceptance_criteria.${index}.status`)}
+									onValueChange={(val) =>
+										setValue(`acceptance_criteria.${index}.status`, val as CriterionStatus)
+									}
+								>
+									<SelectTrigger className="w-[120px]">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="pending">En attente</SelectItem>
+										<SelectItem value="pass">Validé</SelectItem>
+										<SelectItem value="fail">Échoué</SelectItem>
+									</SelectContent>
+								</Select>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+									onClick={() => remove(index)}
+								>
+									<Trash2 className="h-3.5 w-3.5" />
+								</Button>
+							</div>
+							<div className="grid grid-cols-3 gap-2">
+								<div className="space-y-1">
+									<Label className="text-xs text-muted-foreground">Given</Label>
+									<Input
+										{...register(`acceptance_criteria.${index}.given_clause`)}
+										placeholder="Contexte initial..."
+										className="text-xs"
+									/>
+								</div>
+								<div className="space-y-1">
+									<Label className="text-xs text-muted-foreground">When</Label>
+									<Input
+										{...register(`acceptance_criteria.${index}.when_clause`)}
+										placeholder="Action effectuée..."
+										className="text-xs"
+									/>
+								</div>
+								<div className="space-y-1">
+									<Label className="text-xs text-muted-foreground">Then</Label>
+									<Input
+										{...register(`acceptance_criteria.${index}.then_clause`)}
+										placeholder="Résultat attendu..."
+										className="text-xs"
+									/>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
 			</div>
 
 			<div className="space-y-2">
