@@ -30,6 +30,7 @@ export function ProjectDialog({ open, onOpenChange, project }: ProjectDialogProp
 			objective: values.objective ?? "",
 			status: values.status,
 			github_url: values.github_url ?? "",
+			loom_url: values.loom_url ?? "",
 			raci: values.raci,
 		};
 

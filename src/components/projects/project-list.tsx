@@ -49,6 +49,9 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
 						GitHub
 					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						Loom
+					</TableHead>
 					<TableHead className="w-[100px]" />
 				</TableRow>
 			</TableHeader>
@@ -88,6 +91,21 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 								>
 									<ExternalLink className="h-3 w-3" />
 									Repo
+								</a>
+							) : (
+								<span className="text-xs text-muted-foreground/50">&mdash;</span>
+							)}
+						</TableCell>
+						<TableCell>
+							{project.loom_url ? (
+								<a
+									href={project.loom_url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+								>
+									<ExternalLink className="h-3 w-3" />
+									Vidéo
 								</a>
 							) : (
 								<span className="text-xs text-muted-foreground/50">&mdash;</span>

@@ -16,6 +16,7 @@ export type Project = {
 	objective: string | null;
 	status: ProjectStatus;
 	github_url: string | null;
+	loom_url: string | null;
 	created_at: string;
 	updated_at: string;
 };
@@ -33,5 +34,6 @@ export type ProjectFormInput = {
 	objective: string;
 	status: ProjectStatus;
 	github_url: string;
+	loom_url: string;
 	raci: Record<RaciRole, string[]>;
 };

@@ -45,6 +45,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 			objective: project?.objective ?? "",
 			status: project?.status ?? "draft",
 			github_url: project?.github_url ?? "",
+			loom_url: project?.loom_url ?? "",
 			raci: {
 				R: project?.responsible.map((m) => m.id) ?? [],
 				A: project?.accountable.map((m) => m.id) ?? [],
@@ -105,6 +106,15 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 						<p className="text-sm text-destructive">{errors.github_url.message}</p>
 					)}
 				</div>
+			</div>
+
+			<div className="space-y-2">
+				<Label htmlFor="loom_url">Lien Loom</Label>
+				<Input
+					id="loom_url"
+					{...register("loom_url")}
+					placeholder="https://www.loom.com/share/..."
+				/>
 			</div>
 
 			<div className="border-t border-border pt-4">
