@@ -1,15 +1,19 @@
-import { Badge } from "@/components/ui/badge";
 import type { ProjectStatus } from "@/domain/types";
 
-const statusConfig: Record<ProjectStatus, { label: string; className: string }> = {
-	draft: { label: "Brouillon", className: "bg-gray-100 text-gray-700" },
-	in_progress: { label: "En cours", className: "bg-blue-100 text-blue-700" },
-	review: { label: "En revue", className: "bg-orange-100 text-orange-700" },
-	completed: { label: "Terminé", className: "bg-green-100 text-green-700" },
-	archived: { label: "Archivé", className: "bg-purple-100 text-purple-700" },
+const statusConfig: Record<ProjectStatus, { label: string; dotColor: string }> = {
+	draft: { label: "Brouillon", dotColor: "bg-gray-400" },
+	in_progress: { label: "En cours", dotColor: "bg-blue-500" },
+	review: { label: "En revue", dotColor: "bg-amber-500" },
+	completed: { label: "Terminé", dotColor: "bg-green-500" },
+	archived: { label: "Archivé", dotColor: "bg-gray-300" },
 };
 
 export function StatusBadge({ status }: { status: ProjectStatus }) {
 	const config = statusConfig[status];
-	return <Badge className={config.className}>{config.label}</Badge>;
+	return (
+		<span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+			<span className={`h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
+			{config.label}
+		</span>
+	);
 }

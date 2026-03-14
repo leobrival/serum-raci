@@ -1,3 +1,4 @@
+import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -20,9 +21,11 @@ type ProjectListProps = {
 export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 	if (projects.length === 0) {
 		return (
-			<div className="text-center py-12 text-muted-foreground">
-				<p className="text-lg">Aucun projet pour le moment</p>
-				<p className="text-sm mt-1">Créez votre premier projet pour commencer.</p>
+			<div className="py-16 text-center">
+				<p className="text-sm text-muted-foreground">Aucun projet pour le moment.</p>
+				<p className="mt-1 text-xs text-muted-foreground">
+					Cliquez sur &laquo; Nouveau projet &raquo; pour commencer.
+				</p>
 			</div>
 		);
 	}
@@ -30,22 +33,30 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 	return (
 		<Table>
 			<TableHeader>
-				<TableRow>
-					<TableHead>Projet</TableHead>
-					<TableHead>Statut</TableHead>
-					<TableHead>RACI</TableHead>
-					<TableHead>GitHub</TableHead>
-					<TableHead className="text-right">Actions</TableHead>
+				<TableRow className="hover:bg-transparent">
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						Projet
+					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						Statut
+					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						RACI
+					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						GitHub
+					</TableHead>
+					<TableHead className="w-[100px]" />
 				</TableRow>
 			</TableHeader>
 			<TableBody>
 				{projects.map((project) => (
-					<TableRow key={project.id}>
+					<TableRow key={project.id} className="group">
 						<TableCell>
 							<div>
-								<p className="font-medium">{project.name}</p>
+								<p className="text-sm font-medium">{project.name}</p>
 								{project.description && (
-									<p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+									<p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
 										{project.description}
 									</p>
 								)}
@@ -63,26 +74,34 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 									href={project.github_url}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="text-blue-600 hover:underline text-xs"
+									className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
 								>
+									<ExternalLink className="h-3 w-3" />
 									Repo
 								</a>
 							) : (
-								<span className="text-muted-foreground text-xs">—</span>
+								<span className="text-xs text-muted-foreground/50">&mdash;</span>
 							)}
 						</TableCell>
-						<TableCell className="text-right">
-							<div className="flex justify-end gap-1">
-								<Button variant="ghost" size="sm" onClick={() => onEdit(project)}>
-									Modifier
+						<TableCell>
+							<div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+								<Button
+									variant="ghost"
+									size="icon"
+									className="h-8 w-8"
+									onClick={() => onEdit(project)}
+								>
+									<Pencil className="h-3.5 w-3.5" />
+									<span className="sr-only">Modifier</span>
 								</Button>
 								<Button
 									variant="ghost"
-									size="sm"
-									className="text-destructive hover:text-destructive"
+									size="icon"
+									className="h-8 w-8 text-muted-foreground hover:text-destructive"
 									onClick={() => onDelete(project)}
 								>
-									Supprimer
+									<Trash2 className="h-3.5 w-3.5" />
+									<span className="sr-only">Supprimer</span>
 								</Button>
 							</div>
 						</TableCell>

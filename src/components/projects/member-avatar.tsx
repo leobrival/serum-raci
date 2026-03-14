@@ -11,15 +11,15 @@ function getFullName(member: TeamMember): string {
 export function MemberAvatar({ member }: { member: TeamMember | null }) {
 	if (!member) {
 		return (
-			<span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs text-gray-400">
-				—
+			<span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[10px] text-muted-foreground">
+				&mdash;
 			</span>
 		);
 	}
 
 	return (
 		<span
-			className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground"
+			className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-[10px] font-medium text-background"
 			title={getFullName(member)}
 		>
 			{getInitials(member)}

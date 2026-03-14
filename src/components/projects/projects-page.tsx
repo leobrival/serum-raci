@@ -1,6 +1,6 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ProjectWithRaci } from "@/domain/types";
 import { useProjects } from "@/hooks/use-projects";
 import { DeleteDialog } from "./delete-dialog";
@@ -16,38 +16,45 @@ export function ProjectsPage() {
 
 	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center py-20">
-				<p className="text-muted-foreground">Chargement des projets...</p>
+			<div className="flex items-center justify-center py-32">
+				<div className="flex items-center gap-2 text-sm text-muted-foreground">
+					<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+					Chargement...
+				</div>
 			</div>
 		);
 	}
 
 	if (error) {
 		return (
-			<div className="flex items-center justify-center py-20">
-				<p className="text-destructive">Erreur : {error.message}</p>
+			<div className="flex items-center justify-center py-32">
+				<p className="text-sm text-destructive">Erreur : {error.message}</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="space-y-6">
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between">
-					<div>
-						<CardTitle>Projets</CardTitle>
-						<CardDescription>{projects.length} projet(s) référencé(s)</CardDescription>
-					</div>
-					<Button onClick={() => setCreateOpen(true)}>+ Nouveau projet</Button>
-				</CardHeader>
-				<CardContent>
-					<ProjectList
-						projects={projects}
-						onEdit={(p) => setEditProject(p)}
-						onDelete={(p) => setDeleteProject(p)}
-					/>
-				</CardContent>
-			</Card>
+		<div className="space-y-8">
+			<div className="flex items-center justify-between">
+				<div>
+					<h1 className="text-2xl font-semibold tracking-tight">Projets</h1>
+					<p className="mt-1 text-sm text-muted-foreground">
+						{projects.length} projet{projects.length !== 1 ? "s" : ""}
+					</p>
+				</div>
+				<Button onClick={() => setCreateOpen(true)} size="sm">
+					<Plus className="h-4 w-4" />
+					Nouveau projet
+				</Button>
+			</div>
+
+			<div className="rounded-lg border border-border">
+				<ProjectList
+					projects={projects}
+					onEdit={(p) => setEditProject(p)}
+					onDelete={(p) => setDeleteProject(p)}
+				/>
+			</div>
 
 			<ProjectDialog open={createOpen} onOpenChange={setCreateOpen} />
 
