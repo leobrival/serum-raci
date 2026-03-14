@@ -46,6 +46,9 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 			status: project?.status ?? "draft",
 			github_url: project?.github_url ?? "",
 			loom_url: project?.loom_url ?? "",
+			roi: project?.roi ?? "",
+			gwt: project?.gwt ?? "",
+			user_story: project?.user_story ?? "",
 			raci: {
 				R: project?.responsible.map((m) => m.id) ?? [],
 				A: project?.accountable.map((m) => m.id) ?? [],
@@ -114,6 +117,33 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 					id="loom_url"
 					{...register("loom_url")}
 					placeholder="https://www.loom.com/share/..."
+				/>
+			</div>
+
+			<div className="space-y-2">
+				<Label htmlFor="user_story">User Story</Label>
+				<Textarea
+					id="user_story"
+					{...register("user_story")}
+					placeholder="En tant que [acteur], je veux [action], afin de [bénéfice]..."
+				/>
+			</div>
+
+			<div className="space-y-2">
+				<Label htmlFor="gwt">GWT (Given-When-Then)</Label>
+				<Textarea
+					id="gwt"
+					{...register("gwt")}
+					placeholder="Given [contexte], When [action], Then [résultat attendu]..."
+				/>
+			</div>
+
+			<div className="space-y-2">
+				<Label htmlFor="roi">ROI</Label>
+				<Textarea
+					id="roi"
+					{...register("roi")}
+					placeholder="Gains attendus : temps économisé, revenus, qualité..."
 				/>
 			</div>
 

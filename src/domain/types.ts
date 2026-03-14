@@ -17,6 +17,9 @@ export type Project = {
 	status: ProjectStatus;
 	github_url: string | null;
 	loom_url: string | null;
+	roi: string | null;
+	gwt: string | null;
+	user_story: string | null;
 	created_at: string;
 	updated_at: string;
 };
@@ -35,5 +38,8 @@ export type ProjectFormInput = {
 	status: ProjectStatus;
 	github_url: string;
 	loom_url: string;
+	roi: string;
+	gwt: string;
+	user_story: string;
 	raci: Record<RaciRole, string[]>;
 };

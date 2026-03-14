@@ -7,6 +7,9 @@ export const projectFormSchema = z.object({
 	status: z.enum(["draft", "in_progress", "review", "completed", "archived"]),
 	github_url: z.string(),
 	loom_url: z.string(),
+	roi: z.string(),
+	gwt: z.string(),
+	user_story: z.string(),
 	raci: z.object({
 		R: z.array(z.string()),
 		A: z.array(z.string()),

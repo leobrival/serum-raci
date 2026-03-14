@@ -13,7 +13,7 @@ type RaciRow = {
 export async function getProjects(): Promise<ProjectWithRaci[]> {
 	const [projectRows, raciRows] = await Promise.all([
 		sql`
-			SELECT id, name, description, objective, status, github_url, loom_url, created_at, updated_at
+			SELECT id, name, description, objective, status, github_url, loom_url, roi, gwt, user_story, created_at, updated_at
 			FROM projects
 			ORDER BY updated_at DESC
 		`,
@@ -51,6 +51,9 @@ export async function getProjects(): Promise<ProjectWithRaci[]> {
 			status: row.status as ProjectWithRaci["status"],
 			github_url: row.github_url as string | null,
 			loom_url: row.loom_url as string | null,
+			roi: row.roi as string | null,
+			gwt: row.gwt as string | null,
+			user_story: row.user_story as string | null,
 			created_at: row.created_at as string,
 			updated_at: row.updated_at as string,
 			responsible: raci.R,
@@ -63,14 +66,17 @@ export async function getProjects(): Promise<ProjectWithRaci[]> {
 
 export async function createProject(input: ProjectFormInput): Promise<void> {
 	const [project] = await sql`
-		INSERT INTO projects (name, description, objective, status, github_url, loom_url)
+		INSERT INTO projects (name, description, objective, status, github_url, loom_url, roi, gwt, user_story)
 		VALUES (
 			${input.name},
 			${input.description || null},
 			${input.objective || null},
 			${input.status},
 			${input.github_url || null},
-			${input.loom_url || null}
+			${input.loom_url || null},
+			${input.roi || null},
+			${input.gwt || null},
+			${input.user_story || null}
 		)
 		RETURNING id
 	`;
@@ -88,6 +94,9 @@ export async function updateProject(id: string, input: ProjectFormInput): Promis
 			status = ${input.status},
 			github_url = ${input.github_url || null},
 			loom_url = ${input.loom_url || null},
+			roi = ${input.roi || null},
+			gwt = ${input.gwt || null},
+			user_story = ${input.user_story || null},
 			updated_at = NOW()
 		WHERE id = ${id}
 	`;

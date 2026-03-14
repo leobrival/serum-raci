@@ -52,6 +52,15 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
 						Loom
 					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						User Story
+					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						GWT
+					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						ROI
+					</TableHead>
 					<TableHead className="w-[100px]" />
 				</TableRow>
 			</TableHeader>
@@ -107,6 +116,33 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 									<ExternalLink className="h-3 w-3" />
 									Vidéo
 								</a>
+							) : (
+								<span className="text-xs text-muted-foreground/50">&mdash;</span>
+							)}
+						</TableCell>
+						<TableCell>
+							{project.user_story ? (
+								<p className="text-xs text-muted-foreground line-clamp-2 max-w-[200px]">
+									{project.user_story}
+								</p>
+							) : (
+								<span className="text-xs text-muted-foreground/50">&mdash;</span>
+							)}
+						</TableCell>
+						<TableCell>
+							{project.gwt ? (
+								<p className="text-xs text-muted-foreground line-clamp-2 max-w-[200px]">
+									{project.gwt}
+								</p>
+							) : (
+								<span className="text-xs text-muted-foreground/50">&mdash;</span>
+							)}
+						</TableCell>
+						<TableCell>
+							{project.roi ? (
+								<p className="text-xs text-muted-foreground line-clamp-2 max-w-[200px]">
+									{project.roi}
+								</p>
 							) : (
 								<span className="text-xs text-muted-foreground/50">&mdash;</span>
 							)}
