@@ -13,6 +13,7 @@ export type Project = {
 	id: string;
 	name: string;
 	description: string | null;
+	objective: string | null;
 	status: ProjectStatus;
 	github_url: string | null;
 	created_at: string;
@@ -29,6 +30,7 @@ export type ProjectWithRaci = Project & {
 export type ProjectFormInput = {
 	name: string;
 	description: string;
+	objective: string;
 	status: ProjectStatus;
 	github_url: string;
 	raci: Record<RaciRole, string[]>;

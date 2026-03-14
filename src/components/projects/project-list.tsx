@@ -38,6 +38,9 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 						Projet
 					</TableHead>
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						Objectif
+					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
 						Statut
 					</TableHead>
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -61,6 +64,13 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 									</p>
 								)}
 							</div>
+						</TableCell>
+						<TableCell>
+							{project.objective ? (
+								<p className="text-xs text-muted-foreground line-clamp-1">{project.objective}</p>
+							) : (
+								<span className="text-xs text-muted-foreground/50">&mdash;</span>
+							)}
 						</TableCell>
 						<TableCell>
 							<StatusBadge status={project.status} />

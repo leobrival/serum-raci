@@ -42,6 +42,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 		defaultValues: {
 			name: project?.name ?? "",
 			description: project?.description ?? "",
+			objective: project?.objective ?? "",
 			status: project?.status ?? "draft",
 			github_url: project?.github_url ?? "",
 			raci: {
@@ -70,6 +71,11 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 					{...register("description")}
 					placeholder="Description du projet..."
 				/>
+			</div>
+
+			<div className="space-y-2">
+				<Label htmlFor="objective">Objectif</Label>
+				<Textarea id="objective" {...register("objective")} placeholder="Objectif du projet..." />
 			</div>
 
 			<div className="grid grid-cols-2 gap-4">

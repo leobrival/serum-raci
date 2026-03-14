@@ -27,6 +27,7 @@ export function ProjectDialog({ open, onOpenChange, project }: ProjectDialogProp
 		const input = {
 			name: values.name,
 			description: values.description ?? "",
+			objective: values.objective ?? "",
 			status: values.status,
 			github_url: values.github_url ?? "",
 			raci: values.raci,
