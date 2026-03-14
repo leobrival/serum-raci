@@ -1,7 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,6 +24,115 @@ type ProjectFormProps = {
 	onCancel: () => void;
 	isPending: boolean;
 };
+
+type CriterionItemProps = {
+	index: number;
+	register: ReturnType<typeof useForm<ProjectFormValues>>["register"];
+	watch: ReturnType<typeof useForm<ProjectFormValues>>["watch"];
+	setValue: ReturnType<typeof useForm<ProjectFormValues>>["setValue"];
+	remove: (index: number) => void;
+};
+
+const statusLabel: Record<CriterionStatus, string> = {
+	pending: "En attente",
+	pass: "Validé",
+	fail: "Échoué",
+};
+
+const statusDot: Record<CriterionStatus, string> = {
+	pending: "bg-muted-foreground/40",
+	pass: "bg-green-500",
+	fail: "bg-red-500",
+};
+
+function CriterionItem({ index, register, watch, setValue, remove }: CriterionItemProps) {
+	const [open, setOpen] = useState(false);
+	const title = watch(`acceptance_criteria.${index}.title`);
+	const status = watch(`acceptance_criteria.${index}.status`);
+
+	return (
+		<Collapsible open={open} onOpenChange={setOpen}>
+			<div className="rounded-md border border-border">
+				<div className="flex items-center gap-2 px-3 py-2">
+					<CollapsibleTrigger asChild>
+						<button type="button" className="flex items-center gap-2 flex-1 min-w-0 text-left">
+							<ChevronDown
+								className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${open ? "" : "-rotate-90"}`}
+							/>
+							<div
+								className={`h-2 w-2 shrink-0 rounded-full ${statusDot[status]}`}
+								title={statusLabel[status]}
+							/>
+							<span className="text-sm truncate">
+								{title || `AC-${String(index + 1).padStart(3, "0")}`}
+							</span>
+						</button>
+					</CollapsibleTrigger>
+					<Select
+						value={status}
+						onValueChange={(val) =>
+							setValue(`acceptance_criteria.${index}.status`, val as CriterionStatus)
+						}
+					>
+						<SelectTrigger className="w-[110px] h-7 text-xs">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="pending">En attente</SelectItem>
+							<SelectItem value="pass">Validé</SelectItem>
+							<SelectItem value="fail">Échoué</SelectItem>
+						</SelectContent>
+					</Select>
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+						onClick={() => remove(index)}
+					>
+						<Trash2 className="h-3.5 w-3.5" />
+					</Button>
+				</div>
+				<CollapsibleContent>
+					<div className="border-t border-border px-3 py-3 space-y-3">
+						<div className="space-y-1">
+							<Label className="text-xs font-medium">Titre</Label>
+							<Input
+								{...register(`acceptance_criteria.${index}.title`)}
+								placeholder={`AC-${String(index + 1).padStart(3, "0")}: Titre du critère`}
+								className="text-sm"
+							/>
+						</div>
+						<div className="space-y-1">
+							<Label className="text-xs text-muted-foreground">Given (contexte)</Label>
+							<Textarea
+								{...register(`acceptance_criteria.${index}.given_clause`)}
+								placeholder="Étant donné que..."
+								className="text-xs min-h-[60px]"
+							/>
+						</div>
+						<div className="space-y-1">
+							<Label className="text-xs text-muted-foreground">When (action)</Label>
+							<Textarea
+								{...register(`acceptance_criteria.${index}.when_clause`)}
+								placeholder="Quand l'utilisateur..."
+								className="text-xs min-h-[60px]"
+							/>
+						</div>
+						<div className="space-y-1">
+							<Label className="text-xs text-muted-foreground">Then (résultat)</Label>
+							<Textarea
+								{...register(`acceptance_criteria.${index}.then_clause`)}
+								placeholder="Alors le système..."
+								className="text-xs min-h-[60px]"
+							/>
+						</div>
+					</div>
+				</CollapsibleContent>
+			</div>
+		</Collapsible>
+	);
+}
 
 const statusOptions: { value: ProjectStatus; label: string }[] = [
 	{ value: "draft", label: "Brouillon" },
@@ -168,67 +279,16 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 				{fields.length === 0 && (
 					<p className="text-xs text-muted-foreground">Aucun critère. Cliquez sur Ajouter.</p>
 				)}
-				<div className="space-y-3">
+				<div className="space-y-2">
 					{fields.map((field, index) => (
-						<div key={field.id} className="rounded-md border border-border p-3 space-y-2">
-							<div className="flex items-center gap-2">
-								<Input
-									{...register(`acceptance_criteria.${index}.title`)}
-									placeholder={`AC-${String(index + 1).padStart(3, "0")}: Titre du critère`}
-									className="text-sm"
-								/>
-								<Select
-									value={watch(`acceptance_criteria.${index}.status`)}
-									onValueChange={(val) =>
-										setValue(`acceptance_criteria.${index}.status`, val as CriterionStatus)
-									}
-								>
-									<SelectTrigger className="w-[120px]">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="pending">En attente</SelectItem>
-										<SelectItem value="pass">Validé</SelectItem>
-										<SelectItem value="fail">Échoué</SelectItem>
-									</SelectContent>
-								</Select>
-								<Button
-									type="button"
-									variant="ghost"
-									size="icon"
-									className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-									onClick={() => remove(index)}
-								>
-									<Trash2 className="h-3.5 w-3.5" />
-								</Button>
-							</div>
-							<div className="grid grid-cols-3 gap-2">
-								<div className="space-y-1">
-									<Label className="text-xs text-muted-foreground">Given</Label>
-									<Input
-										{...register(`acceptance_criteria.${index}.given_clause`)}
-										placeholder="Contexte initial..."
-										className="text-xs"
-									/>
-								</div>
-								<div className="space-y-1">
-									<Label className="text-xs text-muted-foreground">When</Label>
-									<Input
-										{...register(`acceptance_criteria.${index}.when_clause`)}
-										placeholder="Action effectuée..."
-										className="text-xs"
-									/>
-								</div>
-								<div className="space-y-1">
-									<Label className="text-xs text-muted-foreground">Then</Label>
-									<Input
-										{...register(`acceptance_criteria.${index}.then_clause`)}
-										placeholder="Résultat attendu..."
-										className="text-xs"
-									/>
-								</div>
-							</div>
-						</div>
+						<CriterionItem
+							key={field.id}
+							index={index}
+							register={register}
+							watch={watch}
+							setValue={setValue}
+							remove={remove}
+						/>
 					))}
 				</div>
 			</div>
