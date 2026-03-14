@@ -1,5 +1,15 @@
 export type RaciRole = "R" | "A" | "C" | "I";
 
+export type ProjectCategory =
+	| "product"
+	| "marketing"
+	| "sales"
+	| "support"
+	| "operations"
+	| "finance"
+	| "legal"
+	| "hr";
+
 export type CriterionStatus = "pending" | "pass" | "fail";
 
 export type AcceptanceCriterion = {
@@ -26,6 +36,7 @@ export type Project = {
 	description: string | null;
 	objective: string | null;
 	status: ProjectStatus;
+	categories: ProjectCategory[];
 	github_url: string | null;
 	loom_url: string | null;
 	roi: string | null;
@@ -47,6 +58,7 @@ export type ProjectFormInput = {
 	description: string;
 	objective: string;
 	status: ProjectStatus;
+	categories: ProjectCategory[];
 	github_url: string;
 	loom_url: string;
 	roi: string;

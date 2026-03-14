@@ -1,6 +1,7 @@
 import type {
 	AcceptanceCriterion,
 	CriterionStatus,
+	ProjectCategory,
 	ProjectFormInput,
 	ProjectWithRaci,
 	RaciRole,
@@ -20,7 +21,7 @@ type RaciRow = {
 export async function getProjects(): Promise<ProjectWithRaci[]> {
 	const [projectRows, raciRows, criteriaRows] = await Promise.all([
 		sql`
-			SELECT id, name, description, objective, status, github_url, loom_url, roi, user_story, created_at, updated_at
+			SELECT id, name, description, objective, status, categories, github_url, loom_url, roi, user_story, created_at, updated_at
 			FROM projects
 			ORDER BY updated_at DESC
 		`,
@@ -79,6 +80,7 @@ export async function getProjects(): Promise<ProjectWithRaci[]> {
 			description: row.description as string | null,
 			objective: row.objective as string | null,
 			status: row.status as ProjectWithRaci["status"],
+			categories: (row.categories ?? []) as ProjectCategory[],
 			github_url: row.github_url as string | null,
 			loom_url: row.loom_url as string | null,
 			roi: row.roi as string | null,
@@ -96,12 +98,13 @@ export async function getProjects(): Promise<ProjectWithRaci[]> {
 
 export async function createProject(input: ProjectFormInput): Promise<void> {
 	const [project] = await sql`
-		INSERT INTO projects (name, description, objective, status, github_url, loom_url, roi, user_story)
+		INSERT INTO projects (name, description, objective, status, categories, github_url, loom_url, roi, user_story)
 		VALUES (
 			${input.name},
 			${input.description || null},
 			${input.objective || null},
 			${input.status},
+			${input.categories},
 			${input.github_url || null},
 			${input.loom_url || null},
 			${input.roi || null},
@@ -122,6 +125,7 @@ export async function updateProject(id: string, input: ProjectFormInput): Promis
 			description = ${input.description || null},
 			objective = ${input.objective || null},
 			status = ${input.status},
+			categories = ${input.categories},
 			github_url = ${input.github_url || null},
 			loom_url = ${input.loom_url || null},
 			roi = ${input.roi || null},

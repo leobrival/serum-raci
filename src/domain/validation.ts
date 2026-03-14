@@ -5,6 +5,9 @@ export const projectFormSchema = z.object({
 	description: z.string(),
 	objective: z.string(),
 	status: z.enum(["draft", "in_progress", "review", "completed", "archived"]),
+	categories: z.array(
+		z.enum(["product", "marketing", "sales", "support", "operations", "finance", "legal", "hr"]),
+	),
 	github_url: z.string(),
 	loom_url: z.string(),
 	roi: z.string(),

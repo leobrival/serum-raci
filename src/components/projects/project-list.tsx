@@ -1,4 +1,5 @@
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -8,9 +9,20 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import type { ProjectWithRaci } from "@/domain/types";
+import type { ProjectCategory, ProjectWithRaci } from "@/domain/types";
 import { RaciDisplay } from "./raci-display";
 import { StatusBadge } from "./status-badge";
+
+const categoryLabel: Record<ProjectCategory, string> = {
+	product: "Product",
+	marketing: "Marketing",
+	sales: "Sales",
+	support: "Support",
+	operations: "Operations",
+	finance: "Finance",
+	legal: "Legal",
+	hr: "HR",
+};
 
 type ProjectListProps = {
 	projects: ProjectWithRaci[];
@@ -42,6 +54,9 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 					</TableHead>
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
 						Statut
+					</TableHead>
+					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+						Catégories
 					</TableHead>
 					<TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
 						RACI
@@ -86,6 +101,19 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 						</TableCell>
 						<TableCell>
 							<StatusBadge status={project.status} />
+						</TableCell>
+						<TableCell>
+							{project.categories.length > 0 ? (
+								<div className="flex flex-wrap gap-1">
+									{project.categories.map((cat) => (
+										<Badge key={cat} variant="outline" className="text-[10px] px-1.5 py-0">
+											{categoryLabel[cat]}
+										</Badge>
+									))}
+								</div>
+							) : (
+								<span className="text-xs text-muted-foreground/50">&mdash;</span>
+							)}
 						</TableCell>
 						<TableCell>
 							<RaciDisplay project={project} />

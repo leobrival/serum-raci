@@ -14,7 +14,12 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { CriterionStatus, ProjectStatus, ProjectWithRaci } from "@/domain/types";
+import type {
+	CriterionStatus,
+	ProjectCategory,
+	ProjectStatus,
+	ProjectWithRaci,
+} from "@/domain/types";
 import { type ProjectFormValues, projectFormSchema } from "@/domain/validation";
 import { MemberMultiSelect } from "./member-multi-select";
 
@@ -142,6 +147,17 @@ const statusOptions: { value: ProjectStatus; label: string }[] = [
 	{ value: "archived", label: "Archivé" },
 ];
 
+const categoryOptions: { value: ProjectCategory; label: string }[] = [
+	{ value: "product", label: "Product" },
+	{ value: "marketing", label: "Marketing" },
+	{ value: "sales", label: "Sales" },
+	{ value: "support", label: "Support" },
+	{ value: "operations", label: "Operations" },
+	{ value: "finance", label: "Finance" },
+	{ value: "legal", label: "Legal" },
+	{ value: "hr", label: "HR" },
+];
+
 export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectFormProps) {
 	const {
 		register,
@@ -157,6 +173,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 			description: project?.description ?? "",
 			objective: project?.objective ?? "",
 			status: project?.status ?? "draft",
+			categories: project?.categories ?? [],
 			github_url: project?.github_url ?? "",
 			loom_url: project?.loom_url ?? "",
 			roi: project?.roi ?? "",
@@ -233,6 +250,39 @@ export function ProjectForm({ project, onSubmit, onCancel, isPending }: ProjectF
 					{errors.github_url && (
 						<p className="text-sm text-destructive">{errors.github_url.message}</p>
 					)}
+				</div>
+			</div>
+
+			<div className="space-y-2">
+				<Label>Catégories</Label>
+				<div className="flex flex-wrap gap-2">
+					{categoryOptions.map((cat) => {
+						const selected = watch("categories").includes(cat.value);
+						return (
+							<button
+								key={cat.value}
+								type="button"
+								className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+									selected
+										? "border-foreground bg-foreground text-background"
+										: "border-border text-muted-foreground hover:border-foreground/50"
+								}`}
+								onClick={() => {
+									const current = watch("categories");
+									if (selected) {
+										setValue(
+											"categories",
+											current.filter((c) => c !== cat.value),
+										);
+									} else {
+										setValue("categories", [...current, cat.value]);
+									}
+								}}
+							>
+								{cat.label}
+							</button>
+						);
+					})}
 				</div>
 			</div>
 

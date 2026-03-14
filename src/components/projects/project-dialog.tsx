@@ -29,6 +29,7 @@ export function ProjectDialog({ open, onOpenChange, project }: ProjectDialogProp
 			description: values.description ?? "",
 			objective: values.objective ?? "",
 			status: values.status,
+			categories: values.categories,
 			github_url: values.github_url ?? "",
 			loom_url: values.loom_url ?? "",
 			roi: values.roi ?? "",
