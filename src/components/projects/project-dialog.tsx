@@ -1,10 +1,10 @@
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+} from "@/components/ui/sheet";
 import type { ProjectWithRaci } from "@/domain/types";
 import type { ProjectFormValues } from "@/domain/validation";
 import { useCreateProject, useUpdateProject } from "@/hooks/use-projects";
@@ -47,23 +47,23 @@ export function ProjectDialog({ open, onOpenChange, project }: ProjectDialogProp
 	}
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>{isEditing ? "Modifier le projet" : "Nouveau projet"}</DialogTitle>
-					<DialogDescription>
+		<Sheet open={open} onOpenChange={onOpenChange}>
+			<SheetContent side="right" className="w-[50vw] max-w-none sm:max-w-none overflow-y-auto">
+				<SheetHeader>
+					<SheetTitle>{isEditing ? "Modifier le projet" : "Nouveau projet"}</SheetTitle>
+					<SheetDescription>
 						{isEditing
 							? "Modifiez les informations du projet et les rôles RACI."
 							: "Créez un nouveau projet et assignez les rôles RACI."}
-					</DialogDescription>
-				</DialogHeader>
+					</SheetDescription>
+				</SheetHeader>
 				<ProjectForm
 					project={project}
 					onSubmit={handleSubmit}
 					onCancel={() => onOpenChange(false)}
 					isPending={isPending}
 				/>
-			</DialogContent>
-		</Dialog>
+			</SheetContent>
+		</Sheet>
 	);
 }
